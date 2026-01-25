@@ -1,6 +1,9 @@
-p = int(input())
-v = p // 3
-f = p % 3
-
-print(v)
-print(f)
+D = int(input())
+if D <= 10:
+    print("Arthur")
+elif D <= 30:
+    print("Luiz")
+elif D <= 100:
+    print("Pedro")
+else:
+    print("Nenhum")

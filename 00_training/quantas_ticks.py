@@ -1,6 +1,11 @@
-p = int(input())
-v = p // 3
-f = p % 3
+# D = dias construindo
+# C = Casas construidas
+# T = ticks por casa
 
-print(v)
-print(f)
+D = int(input())
+C = int(input())
+ticks_1 = D * 24000 * 3
+ticks_2 = ticks_1 * 3
+ticks = ticks_2 // 2
+T = ticks // C
+print(T)
