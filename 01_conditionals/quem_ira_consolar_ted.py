@@ -1,5 +1,27 @@
+"""
+Questão: Quem irá consolar Ted?
+
+Enunciado:
+O programa simula uma noite de Ted Mosby após uma decepção amorosa.
+Deve-se identificar quem vai consolá-lo, onde irão e gerar um relatório final.
+
+Regras:
+1. Receber a quantidade de pessoas (0 a 4).
+2. Se 0, Ted vai beber sozinho.
+3. Se > 0, receber os nomes e reagir a cada um (Barney, Robin, Marshall, Lily ou outros).
+4. Reagir a combinações específicas (Casal Marshall/Lily, Quinteto, etc.).
+5. Receber o lugar e reagir (Laser Tag com Barney, Carmichael's com Robin, etc.).
+6. Se o lugar for MacLaren's, verificar se algum amigo principal está presente.
+7. Calcular consumo de cerveja se for no Pub.
+
+Restrição:
+- Proibido uso de Listas ou Laços de Repetição. Apenas estruturas condicionais.
+"""
+
 print("Ted se iludiu de novo. Esse é o momento que ele mais precisa dos amigos dele…")
 print("Quantos dos amigos dele conseguirão ajudar dessa vez?")
+
+# Inicialização de variáveis
 nome1 = ""
 nome2 = ""
 nome3 = ""
@@ -7,8 +29,8 @@ nome4 = ""
 quantidade_pessoas = int(input())
 quant_total_cervejas = ""
 quant_media_cervejas = ""
-# SOZINHO
-# FAÇA A PARTE QUE ELE VAI SOZINHO
+
+# --- CASO 1: TED ESTÁ SOZINHO ---
 if quantidade_pessoas == 0:
     quant_total_cervejas = int(input())
     print("\nRelatório da situação de Ted:")
@@ -17,14 +39,15 @@ if quantidade_pessoas == 0:
 
 else:
     print("Hora da lista dos amigos da vez!")
-    # MENSAGENS
+
+    # --- DEFINIÇÃO DAS MENSAGENS PADRÃO ---
     mensagem_barney = "Barney foi voluntário dessa vez. Tenho certeza que ele vai conseguir transformar toda essa tristeza de Ted em um rolê Legen… espera por isso… DÁRIO."
     mensagem_robin = "Trompa azul na área! A repórter mais amada do Metro News 1 vai tentar ajudar. Tomara que ele não fique mais iludido ainda."
     mensagem_marshall = "O melhor amigo de Ted com certeza estaria com ele em um momento tão difícil. Marshall realmente sabe o valor da irmandade."
     mensagem_lily = "Lily adora fazer o papel da irmã mais velha. Com certeza ela irá consolar ele, mas só depois de dizer “Eu avisei”."
     mensagem_outro = "vai encarar essa com Ted. Às vezes a gente encontra apoio de quem menos espera."
 
-    # NOMES AMIGOS
+    # --- LEITURA DOS NOMES E REAÇÕES INDIVIDUAIS ---
     if quantidade_pessoas >= 1:
         nome1 = input()
         if nome1 == "Barney":
@@ -37,6 +60,7 @@ else:
             print(mensagem_lily)
         else:
             print(f"{nome1} {mensagem_outro}")
+
     if quantidade_pessoas >= 2:
         nome2 = input()
         if nome2 == "Barney":
@@ -49,6 +73,7 @@ else:
             print(mensagem_lily)
         else:
             print(f"{nome2} {mensagem_outro}")
+
     if quantidade_pessoas >= 3:
         nome3 = input()
         if nome3 == "Barney":
@@ -61,6 +86,7 @@ else:
             print(mensagem_lily)
         else:
             print(f"{nome3} {mensagem_outro}")
+
     if quantidade_pessoas == 4:
         nome4 = input()
         if nome4 == "Barney":
@@ -74,19 +100,23 @@ else:
         else:
             print(f"{nome4} {mensagem_outro}")
 
-    # DUPLAS E GRUPOS
+    # --- REAÇÕES ESPECÍFICAS DE DUPLAS E GRUPOS ---
     if quantidade_pessoas == 2:
+        # Casal Marshall e Lily
         if (nome1 == "Marshall" and nome2 == "Lily") or (
             nome2 == "Marshall" and nome1 == "Lily"
         ):
             print("Nada melhor que um casal para dar conselhos de relacionamento.")
 
+        # Melhores amigos Barney e Marshall
         elif (nome1 == "Barney" and nome2 == "Marshall") or (
             nome2 == "Barney" and nome1 == "Marshall"
         ):
             print(
                 "Sem dúvida os melhores amigos de Ted. Mas tomara que Barney não queira implicar com Marshall sobre quem realmente é o melhor amigo dele."
             )
+
+    # Quinteto Completo (Verifica se todos os 4 principais estão presentes)
     if quantidade_pessoas == 4 and (
         (
             nome1 == "Barney"
@@ -109,11 +139,12 @@ else:
             "O quinteto estará reunido nessa jornada! É o momento perfeito pra brincar de “Você conhece o Ted?”."
         )
 
-    # LUGARES
+    # --- ESCOLHA DO LUGAR ---
     lugar = input()
 
     laser_barney = "Com certeza a Arena de Laser Tag foi escolhida por influência de Barney. Se arrume Ted, é hora de botar um terno, tomar um whisky e partir pra diversão."
 
+    # Verifica Barney no Laser Tag
     if lugar == "Arena de Laser Tag":
         if quantidade_pessoas == 1 and nome1 == "Barney":
             print(laser_barney)
@@ -131,11 +162,13 @@ else:
         ):
             print(laser_barney)
 
+    # Verifica Robin no Carmichael's
     if quantidade_pessoas == 1 and nome1 == "Robin" and lugar == "Carmichael’s":
         print(
             "Acho que Ted e Robin vão sair em um date… Tomara que Ted não roube aquela trompa azul da parede de novo."
         )
 
+    # Lógica do MacLaren's Pub (Verifica presença de pelo menos um amigo principal)
     if lugar == "MacLaren’s Pub":
         if quantidade_pessoas == 1 and (
             nome1 == "Barney"
@@ -218,7 +251,7 @@ else:
     if lugar == "MacLaren’s Pub":
         quant_media_cervejas = int(input())
 
-    # FRASES PRA QUANTIDADES DE PESSOAS
+    # --- DEFINIÇÃO DA FRASE FINAL (POR QUANTIDADE DE PESSOAS) ---
     if quantidade_pessoas == 1:
         frase = "Saideira de um pra um. Nada melhor do que uma pessoa pra ouvir seus problemas."
     elif quantidade_pessoas == 2:
@@ -256,9 +289,11 @@ else:
         else:
             frase = "Saiu um quinteto um pouco diferente do que a gente tá acostumado, mas no fim conseguiram deixar Ted alegre."
 
+    # Cálculo da cerveja se estiverem no Pub
     if lugar == "MacLaren’s Pub":
         quant_total_cervejas = quant_media_cervejas * (quantidade_pessoas + 1)
-    # RELATÓRIO FINAL:
+
+    # --- RELATÓRIO FINAL ---
     print("\nRelatório da situação de Ted:")
     if quantidade_pessoas == 1:
         print(f"- Ted foi consolado por: {nome1}.")
