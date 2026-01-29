@@ -1,4 +1,32 @@
-# Criar Gerenciador de Componentes
+"""
+Título: O Supercomputador V13
+
+Resumo do problema:
+Este programa atua como um gerenciador de componentes para projetos complexos
+de Redstone no Minecraft. Dado um projeto específico, o programa recebe entradas
+de componentes coletados e suas quantidades, verifica se são úteis ou não,
+acompanha o progresso da coleta e informa se já é possível construir o projeto.
+
+Regras principais:
+- Apenas componentes especificados para o projeto são considerados úteis.
+- Componentes não úteis são registrados separadamente.
+- A construção só é permitida quando todos os componentes necessários atingirem
+  a quantidade mínima exigida.
+- Caso faltem componentes, o programa informa quantos packs de 64 itens faltam.
+- A ordem de impressão dos relatórios deve respeitar a ordem de entrada.
+- O programa continua recebendo entradas até que o projeto possa ser construído.
+
+Entradas:
+- Nome do projeto.
+- Sequência de componentes e quantidades coletadas.
+- A palavra "Construir!" indica a tentativa de construção.
+
+Saídas:
+- Mensagens imediatas para cada componente recebido.
+- Relatórios finais de componentes utilizados e não utilizados, ou de itens faltantes.
+"""
+
+# Listas de componentes necessários para cada projeto
 componentes_memoria_rom_simples = [
     "Redstone",
     256,
@@ -7,6 +35,7 @@ componentes_memoria_rom_simples = [
     "Tochas de Redstone",
     128,
 ]
+
 componentes_calculadora_4_bits = [
     "Redstone",
     512,
@@ -17,6 +46,7 @@ componentes_calculadora_4_bits = [
     "Lâmpadas de Redstone",
     256,
 ]
+
 componentes_sequenciador_musical = [
     "Redstone",
     1024,
@@ -27,6 +57,7 @@ componentes_sequenciador_musical = [
     "Observadores",
     128,
 ]
+
 componentes_processador_8_bits = [
     "Redstone",
     4096,
@@ -37,6 +68,7 @@ componentes_processador_8_bits = [
     "Pistões Aderentes",
     512,
 ]
+
 componentes_display_video_8x8 = [
     "Redstone",
     2048,
@@ -47,6 +79,7 @@ componentes_display_video_8x8 = [
     "Pistões",
     128,
 ]
+
 componentes_supercomputador_v13 = [
     "Redstone",
     8192,
@@ -58,10 +91,10 @@ componentes_supercomputador_v13 = [
     1024,
 ]
 
-# Input
+# Entrada do nome do projeto
 nome_projeto = input()
 
-# Componentes coletados e suas respectivas quantidades
+# Decisão para selecionar a lista correta de componentes do projeto
 componentes_projeto = []
 if nome_projeto == "Memória ROM Simples":
     componentes_projeto = componentes_memoria_rom_simples
@@ -76,23 +109,22 @@ elif nome_projeto == "Display de Vídeo 8x8":
 elif nome_projeto == "Supercomputador V13":
     componentes_projeto = componentes_supercomputador_v13
 
-# Recebimento de componentes e suas quantidades
+# Listas para armazenar componentes coletados e ordem de entrada
 lista_componentes_e_quantidades = []
 ordem_entrada = []
 
 construiu = False
 
+# Loop principal: continua até o projeto ser construído
 while not construiu:
-    # Receber componentes até "Construir!"
     entrada = input()
 
-    while (
-        entrada != "Construir!"
-    ):  # Recebimento de componentes interrompido quando for digitado "Construir!"
+    # Loop para receber componentes até o comando "Construir!"
+    while entrada != "Construir!":
         nome_componente, valor = entrada.rsplit(" ", 1)
         quantidade_item = int(valor)
 
-        # Verificar se o componente já está na lista
+        # Decisão: somar quantidade se o componente já existir
         if nome_componente in lista_componentes_e_quantidades:
             index_componente = lista_componentes_e_quantidades.index(nome_componente)
             lista_componentes_e_quantidades[index_componente + 1] += quantidade_item
@@ -101,7 +133,7 @@ while not construiu:
             lista_componentes_e_quantidades.append(quantidade_item)
             ordem_entrada.append(nome_componente)
 
-        # Verificar se o componente está na lista de componentes necessários
+        # Decisão: verificar se o componente é útil para o projeto
         if nome_componente not in componentes_projeto:
             print(f"Hmm, {nome_componente} não parece ser útil para este projeto.")
         else:
@@ -144,10 +176,10 @@ while not construiu:
 
         entrada = input()
 
-    # Analisar se ele conseguiu a quantidade necessária de cada componente
     pode_construir = True
     itens_faltantes = []
 
+    # Verificação dos componentes necessários
     for i in range(0, len(componentes_projeto), 2):
         componente_necessario = componentes_projeto[i]
         quantidade_necessaria = componentes_projeto[i + 1]
@@ -159,6 +191,7 @@ while not construiu:
             )
             quantidade_coletada = lista_componentes_e_quantidades[index_componente + 1]
 
+        # Decisão: verificar se falta componente
         if quantidade_coletada < quantidade_necessaria:
             pode_construir = False
             falta = quantidade_necessaria - quantidade_coletada
@@ -168,14 +201,14 @@ while not construiu:
             itens_faltantes.append(componente_necessario)
             itens_faltantes.append(packs_faltantes)
 
-    # Prints
+    # Decisão final: construir ou listar itens faltantes
     if pode_construir:
         print(
             f"\nViniccius13 conseguiu construir o {nome_projeto}! Partiu programar!\n"
         )
         print(f"Para construirmos a(o) {nome_projeto}, utilizamos:\n")
 
-        # Imprimir os componentes utilizados
+        # Impressão dos componentes utilizados
         for componente in ordem_entrada:
             if componente in componentes_projeto:
                 index_componente = lista_componentes_e_quantidades.index(componente)
@@ -184,13 +217,13 @@ while not construiu:
                 ]
                 print(f"{componente} : {quantidade_componente}")
 
-        # Verificar se existem componentes que não são necessários
+        # Verificação de componentes não utilizados
         componentes_nao_uteis = False
         for componente in ordem_entrada:
             if componente not in componentes_projeto:
                 componentes_nao_uteis = True
 
-        # Imprimir os componentes que não são necessários
+        # Impressão dos componentes não utilizados
         if componentes_nao_uteis:
             print("\nMas, em nossa jornada, também coletamos:\n")
             for componente in ordem_entrada:
@@ -203,7 +236,6 @@ while not construiu:
 
         construiu = True
     else:
-        # Componentes faltantes
         print(f"\nAinda não é possível construir o {nome_projeto}! Faltam:\n")
         for i in range(0, len(itens_faltantes), 2):
             nome_componente = itens_faltantes[i]

@@ -1,56 +1,80 @@
-# Simulador de cancelamento
-# Processar os eventos da vida de cada um e, ao final, revelar quem permaneceu no TOPO DA FAMA
+"""
+Título: O Simulador de Cancelamento
 
-# Eventos:
-# Evento 1: Envolver-se em uma polêmica. perde 10% dos seus seguidores (0.9 * seguidores)
-# Evento 2: Postar um vídeo de treino inspirador. ganha 5% de seguidores (1.05 * seguidores)
-# Evento 3: Fazer uma publicidade controversa. Perde 15% dos seus seguidores (0.85 * seguidores)
-# Outro evento: O número de seguidores não se altera.
-# OBS: Seguidores sempre valor inteiro. Decimal desconsiderado
-# Proibido função sort(). Usar o Bubble Sort
+Resumo do problema:
+O programa simula o impacto de eventos ocorridos na vida de subcelebridades digitais,
+calculando ganhos ou perdas percentuais de seguidores conforme cada acontecimento.
+Ao final da simulação, os artistas são ordenados em um ranking decrescente de seguidores.
 
-# Inputs
-n_artistas_dinamica = int(input())  # Número artistas dinâmica
+Regras principais:
+- Evento 1: perde 10% dos seguidores.
+- Evento 2: ganha 5% dos seguidores.
+- Evento 3: perde 15% dos seguidores.
+- Outros eventos: número de seguidores permanece inalterado.
+- O número de seguidores deve ser sempre inteiro (valores decimais são truncados).
+- A ordenação do ranking deve ser feita exclusivamente com Bubble Sort.
+- Em caso de empate, a ordem de inserção deve ser mantida.
+
+Entradas:
+- Quantidade de artistas participantes.
+- Nome e número inicial de seguidores de cada artista.
+- Um evento associado a cada artista.
+
+Saídas:
+- Relatório da simulação de eventos.
+- Ranking final com até os 3 artistas com mais seguidores.
+"""
+
+# Entrada: número de artistas participantes da dinâmica
+n_artistas_dinamica = int(input())
+
 lista_artistas_seguidores = []
-# Para cada um dos artistas...
-for artista in range(n_artistas_dinamica):
-    artista_novo = input()  # Adicionar nome do artista
-    nome, seguimores = artista_novo.split(
-        " - "
-    )  # Separar o nome e os seguidores iniciais
-    lista_artistas_seguidores.append(nome)
-    lista_artistas_seguidores.append(
-        int(seguimores)
-    )  # Adicionar o nome e o número de seguidores
 
-# Evento de cada artista...
+# Loop para leitura do nome e seguidores iniciais de cada artista
+for artista in range(n_artistas_dinamica):
+    artista_novo = input()
+    # Separação do nome e da quantidade inicial de seguidores
+    nome, seguimores = artista_novo.split(" - ")
+    lista_artistas_seguidores.append(nome)
+    lista_artistas_seguidores.append(int(seguimores))
+
 lista_eventos = []
+
+# Loop para leitura dos eventos, mantendo a mesma ordem dos artistas
 for artista in range(0, len(lista_artistas_seguidores), 2):
     evento_artista = int(input())
     lista_eventos.append(evento_artista)
 
-# Output
-# Iniciar imprimindo o cabeçalho do simulador com uma linha vazia:
+# Cabeçalho do simulador
 print("--- Simulador de Cancelamento ---\n")
-# Anunciar de quem é a vez:
+
+# Loop principal para processar os eventos de cada subcelebridade
 for i in range(0, len(lista_artistas_seguidores), 2):
     print(f"A subcelebridade da vez é: {lista_artistas_seguidores[i]}")
-    # Imprimir o resultado da ação:
-    if lista_eventos[i // 2] == 1:  # Se o evento for 1
+
+    # Decisão baseada no tipo de evento
+    if lista_eventos[i // 2] == 1:
         print(f"{lista_artistas_seguidores[i]} perdeu 10% dos seguidores!")
+        # Cálculo da perda de 10%
         lista_artistas_seguidores[i + 1] *= 0.9
-    elif lista_eventos[i // 2] == 2:  # Se o evento for 2
+
+    elif lista_eventos[i // 2] == 2:
         print(f"{lista_artistas_seguidores[i]} ganhou 5% de seguidores!")
+        # Cálculo do ganho de 5%
         lista_artistas_seguidores[i + 1] *= 1.05
-    elif lista_eventos[i // 2] == 3:  # Se o evento for 3
+
+    elif lista_eventos[i // 2] == 3:
         print(f"{lista_artistas_seguidores[i]} perdeu 15% dos seguidores!")
+        # Cálculo da perda de 15%
         lista_artistas_seguidores[i + 1] *= 0.85
-    else:  # Se o evento for outro
+
+    else:
         print("Nenhum evento relevante. Seguidores continuam os mesmos.")
 
-# Bubble Sort de artistas e seguidores em ordem crescente:
+# Ordenação dos artistas por número de seguidores (Bubble Sort)
 for i in range(0, len(lista_artistas_seguidores), 2):
     for j in range(0, len(lista_artistas_seguidores) - 2, 2):
+        # Decisão: troca se o artista atual tiver menos seguidores que o próximo
         if lista_artistas_seguidores[j + 1] < lista_artistas_seguidores[j + 3]:
             (
                 lista_artistas_seguidores[j],
@@ -64,19 +88,22 @@ for i in range(0, len(lista_artistas_seguidores), 2):
                 lista_artistas_seguidores[j + 1],
             )
 
-
+# Cabeçalho do ranking final
 print("\n--- RANKING FINAL DE SEGUIDORES ---")
-# Printar o último da lista
+
+# Impressão do primeiro colocado
 print(
     f"1º Lugar: {lista_artistas_seguidores[0]} com {int(lista_artistas_seguidores[1])} seguidores."
 )
+
+# Decisão: imprimir o segundo colocado apenas se existir
 if n_artistas_dinamica > 1:
-    # Printar o penúltimo da lista
     print(
         f"2º Lugar: {lista_artistas_seguidores[2]} com {int(lista_artistas_seguidores[3])} seguidores."
     )
+
+# Decisão: imprimir o terceiro colocado apenas se existir
 if n_artistas_dinamica > 2:
-    # Printar o antepenúltimo da lista
     print(
         f"3º Lugar: {lista_artistas_seguidores[4]} com {int(lista_artistas_seguidores[5])} seguidores."
     )

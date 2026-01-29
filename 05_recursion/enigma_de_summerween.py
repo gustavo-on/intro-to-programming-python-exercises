@@ -1,16 +1,42 @@
+"""
+Título: O Enigma de Summerween
+
+Resumo do problema:
+Decifrar uma mensagem criptografada usando uma cifra encadeada baseada no alfabeto.
+Cada letra decifrada torna-se a chave da próxima, ignorando símbolos que não pertencem
+ao alfabeto e registrando suas posições como armadilhas.
+
+Lógica principal / Regras:
+- A decifração segue a fórmula Mi = (Ci - Ki) mod 26.
+- A chave inicial é usada apenas para a primeira letra válida.
+- Cada letra decifrada passa a ser a chave da próxima iteração.
+- Símbolos fora do alfabeto não geram letra decifrada e não alteram a chave,
+  mas têm seus índices registrados como armadilhas.
+- A solução é implementada de forma recursiva.
+
+Entradas:
+- Uma letra maiúscula representando a chave inicial.
+- Uma string representando a frase criptografada (letras e possíveis símbolos).
+
+Saídas:
+- Mensagens informativas sobre o início da decifração.
+- Lista de índices onde símbolos inválidos foram encontrados (se existirem).
+- Mensagem final decifrada contendo apenas letras válidas.
+"""
+
+
 def decifrar(frase_restante, chave_atual, alfabeto_ref, indice_original, lista_traps):
-    # Caso base: Quando a frase restante for vazia, retorna uma string vazia.
+    # Decisão: condição de parada da recursão quando não há mais caracteres a processar
     if len(frase_restante) == 0:
         return ""
-    # Passo recursivo:
     else:
-        caractere_atual = frase_restante[0]  # Primeiro caractere da frase restante
-        proxima_frase = frase_restante[1:]  # Resto da frase
-        # Se o caractere atual não estiver no alfabeto...
+        caractere_atual = frase_restante[0]
+        proxima_frase = frase_restante[1:]
+
+        # Decisão: caracteres fora do alfabeto não participam da cifra
+        # e devem ser registrados como armadilhas sem alterar a chave atual
         if caractere_atual not in alfabeto_ref:
-            # Adiciona o índice do caractere atual na lista de armadilhas
             lista_traps.append(indice_original)
-            # Retorna uma string vazia e continua a recursão
             return "" + decifrar(
                 proxima_frase,
                 chave_atual,
@@ -18,15 +44,21 @@ def decifrar(frase_restante, chave_atual, alfabeto_ref, indice_original, lista_t
                 indice_original + 1,
                 lista_traps,
             )
-        # Se o caractere atual estiver no alfabeto...
         else:
-            Ci = alfabeto_ref.index(
-                caractere_atual
-            )  # Índice do caractere atual no alfabeto
-            Ki = alfabeto_ref.index(chave_atual)  # Índice da chave atual no alfabeto
-            Mi = (Ci - Ki) % 26  # Índice da letra decifrada
-            letra_decifrada = alfabeto_ref[Mi]  # Letra decifrada
-            # Retorna a letra decifrada e continua a recursão
+            # Cálculo: conversão da letra criptografada para seu índice numérico
+            Ci = alfabeto_ref.index(caractere_atual)
+
+            # Cálculo: conversão da chave atual para índice, permitindo a subtração modular
+            Ki = alfabeto_ref.index(chave_atual)
+
+            # Cálculo central da cifra:
+            # uso de módulo 26 garante retorno ao intervalo do alfabeto
+            Mi = (Ci - Ki) % 26
+
+            letra_decifrada = alfabeto_ref[Mi]
+
+            # Decisão implícita: a letra decifrada torna-se a próxima chave,
+            # mantendo o encadeamento exigido pelo enigma
             return letra_decifrada + decifrar(
                 proxima_frase,
                 letra_decifrada,
@@ -37,24 +69,27 @@ def decifrar(frase_restante, chave_atual, alfabeto_ref, indice_original, lista_t
 
 
 alfabeto = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-# Inputs:
+
+# Entradas garantidas pelo enunciado como válidas
 chave_inicial = input()
 frase_criptografada = input()
+
 indices_armadilhas = []
 
-# Output:
 print("Decifrando mensagem do Trickster...")
+
 mensagem_final = decifrar(
     frase_criptografada, chave_inicial, alfabeto, 0, indices_armadilhas
 )
-# Se houver armadilhas...
+
+# Decisão: existência de armadilhas altera a mensagem de saída
 if len(indices_armadilhas) > 0:
-    indices_em_str = []  # Lista para armazenar os índices das armadilhas
-    for i in indices_armadilhas:  # Para cada índice na lista de armadilhas...
-        indices_em_str.append(
-            str(i)
-        )  # Converte o índice para string e adiciona na lista
+    indices_em_str = []
+    for i in indices_armadilhas:
+        # Conversão necessária apenas para formatação da saída textual
+        indices_em_str.append(str(i))
         texto_indices = ", ".join(indices_em_str)
+
     print(
         f"Esse Trickster é um picareta mesmo. Foram encontradas armadilhas nas posições: {texto_indices}"
     )

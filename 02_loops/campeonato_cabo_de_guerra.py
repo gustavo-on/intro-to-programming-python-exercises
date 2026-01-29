@@ -1,108 +1,142 @@
+"""
+Questão: Campeonato Mundial de Cabo de Guerra!
+
+Enunciado:
+Simulação de um torneio entre Arthur e João.
+O torneio consiste em N partidas (ímpar).
+Cada partida consiste em várias rodadas até a resistência de um zerar.
+
+Regras da Rodada (Input N):
+1. Se N é Quadrado Perfeito: Arthur vence a rodada.
+2. Se N é Primo: João vence a rodada.
+3. Se N não é nenhum dos dois: Vence quem tiver maior Força bruta.
+
+Mecânica:
+- Vencedor da rodada: +1 Resistência.
+- Perdedor da rodada: -1 Resistência.
+- Fim da partida: Resistência de alguém chega a 0.
+- Fim do torneio: Fim das N partidas OU um jogador atinge a maioria absoluta de vitórias.
+
+Output:
+- Mensagens de narrador passo a passo e placar final.
+"""
+
 print("Começa agora o treinamento para grande final mundial de cabo de guerra!")
 
-# Escolhendo a quantidade de rodadas
-# Quantidade de partidas ímpar
+# --- 1. CONFIGURAÇÃO INICIAL E VALIDAÇÃO ---
+
+# Input de quantidade de partidas (Deve ser Ímpar)
 qnt_partidas = int(input())
 while qnt_partidas % 2 == 0:
     print("Não deverá haver empates! O número de partidas deverá ser ímpar.")
     qnt_partidas = int(input())
+
 print(f"Eles batalharão em {qnt_partidas} longas partidas.")
 
-# Partidas
-partidas_joao = 0
-partidas_arthur = 0
-
-# Forças de Arthur e João
+# Inputs de Atributos
 forca_arthur = int(input())
 forca_joao = int(input())
-while forca_arthur == forca_joao:
-    forca_arthur = int(input())
-    forca_joao = int(input())
-resistencia = int(input())
+resistencia_inicial = int(input())
 
-# MAIS FORTE E MAIS FRACO
+# Define quem é o mais forte para o caso de desempate (else)
+# Isso evita checar if/else a cada rodada desnecessariamente
 if forca_arthur > forca_joao:
-    mais_forte = "Arthur"
-    mais_fraco = "João"
+    mais_forte_nome = "Arthur"
+    mais_fraco_nome = "João"
 else:
-    mais_forte = "João"
-    mais_fraco = "Arthur"
+    mais_forte_nome = "João"
+    mais_fraco_nome = "Arthur"
 
-numero_determinante = 0
-
-# Loop de partidas
+# Contadores do Placar Geral
+vitorias_arthur = 0
+vitorias_joao = 0
 partida_atual = 1
+
+# Critério de "Melhor de N": Metade + 1 para vencer
+numero_para_vencer = (qnt_partidas // 2) + 1
+
+# --- 2. LOOP DO TORNEIO (PARTIDAS) ---
 while partida_atual <= qnt_partidas:
-    # Início da partida
     print(f"Começa a {partida_atual}ª partida!")
-    print(f"Placar geral: {partidas_arthur} X {partidas_joao}")
+    print(f"Placar geral: {vitorias_arthur} X {vitorias_joao}")
 
-    # resistências
-    resistencia_arthur = resistencia
-    resistencia_joao = resistencia
+    # Reseta a resistência para a nova partida
+    res_arthur = resistencia_inicial
+    res_joao = resistencia_inicial
 
-    # Partida
-    while resistencia_arthur > 0 and resistencia_joao > 0:
-        numero_determinante = int(input())
+    # --- 3. LOOP DA PARTIDA (RODADAS) ---
+    # Roda enquanto ambos tiverem resistência
+    while res_arthur > 0 and res_joao > 0:
+        numero = int(input())
 
-        # SE FOR QUADRADO PERFEITO
-        if numero_determinante**0.5 == int(numero_determinante**0.5):
+        # A. Verifica Quadrado Perfeito (Arthur)
+        # Se a raiz quadrada inteira ao quadrado for igual ao número original
+        raiz = int(numero**0.5)
+        if raiz * raiz == numero:
             print("O número é um quadrado perfeito! Arthur consegue puxar mais forte.")
-            resistencia_arthur += 1
-            resistencia_joao -= 1
+            res_arthur += 1
+            res_joao -= 1
 
         else:
-            # SE FOR PRIMO
+            # B. Verifica Primo (João)
+            # Conta divisores de 1 até N
             divisores = 0
-            for i in range(1, numero_determinante + 1):
-                if numero_determinante % i == 0:
+            for i in range(1, numero + 1):
+                if numero % i == 0:
                     divisores += 1
-            if divisores == 2:
+
+            if (
+                divisores == 2
+            ):  # Número primo tem exatamente 2 divisores (1 e ele mesmo)
                 print("O primo do primo é primo do primo? João puxa mais forte!")
-                resistencia_arthur -= 1
-                resistencia_joao += 1
+                res_joao += 1
+                res_arthur -= 1
+
+            # C. Força Bruta (Nenhum dos dois)
             else:
                 print(
-                    f"{mais_forte} é o mais forte! {mais_fraco} não consegue segurar."
+                    f"{mais_forte_nome} é o mais forte! {mais_fraco_nome} não consegue segurar."
                 )
-                if mais_forte == "Arthur":
-                    resistencia_arthur += 1
-                    resistencia_joao -= 1
+                if mais_forte_nome == "Arthur":
+                    res_arthur += 1
+                    res_joao -= 1
                 else:
-                    resistencia_joao += 1
-                    resistencia_arthur -= 1
+                    res_joao += 1
+                    res_arthur -= 1
 
-    # FIM DA PARTIDA
-    if resistencia_arthur <= 0:
-        print("João usa seus talentos de mangueboy e leva essa para casa!")
-        partidas_joao += 1
-    else:
+    # --- FIM DA PARTIDA ---
+    if res_arthur > 0:
         print("Arthur dá orgulho para Maceió e ganha a partida!")
-        partidas_arthur += 1
+        vitorias_arthur += 1
+    else:
+        print("João usa seus talentos de mangueboy e leva essa para casa!")
+        vitorias_joao += 1
 
-    # Verificação sem chance de virada
-    if (partidas_arthur == (qnt_partidas // 2) + 1) or (
-        partidas_joao == (qnt_partidas // 2) + 1
-    ):
-        partida_atual = qnt_partidas
+    # Verificação de Encerramento Antecipado (Chance de Virada)
+    # Se alguém já atingiu a maioria absoluta, paramos o loop
+    if vitorias_arthur == numero_para_vencer or vitorias_joao == numero_para_vencer:
+        break
+
     partida_atual += 1
 
-# FIM DE TODAS PARTIDAS
+# --- 4. RESULTADO FINAL ---
 print("\nAgora eles estão prontos para o mundial!")
-print(f"Placar final: {partidas_arthur} X {partidas_joao}")
+print(f"Placar final: {vitorias_arthur} X {vitorias_joao}")
 
-# Ganhador final
-if partidas_arthur > partidas_joao:
-    nome_ganhador = "Arthur"
-    nome_perdedor = "João"
+if vitorias_arthur > vitorias_joao:
+    ganhador = "Arthur"
+    perdedor = "João"
+    vitorias_ganhador = vitorias_arthur
+    vitorias_perdedor = vitorias_joao
 else:
-    nome_ganhador = "João"
-    nome_perdedor = "Arthur"
+    ganhador = "João"
+    perdedor = "Arthur"
+    vitorias_ganhador = vitorias_joao
+    vitorias_perdedor = vitorias_arthur
 
-# Se o perdedor tiver 0 vitórias
-if min(partidas_arthur, partidas_joao) <= 0:
-    print(f"{nome_perdedor} não teve chance! {nome_ganhador} venceu todas as partidas.")
+# Verifica se foi uma vitória invicta (perdedor zerado)
+if vitorias_perdedor == 0:
+    print(f"{perdedor} não teve chance! {ganhador} venceu todas as partidas.")
 else:
-    print(
-        f"O ganhador foi {nome_ganhador} com uma diferença de {abs(partidas_arthur - partidas_joao)} partidas."
-    )
+    diferenca = vitorias_ganhador - vitorias_perdedor
+    print(f"O ganhador foi {ganhador} com uma diferença de {diferenca} partidas.")

@@ -1,208 +1,198 @@
+"""
+Título: Uma Noite com o Frederico!
+
+Resumo do problema:
+O desafio consiste em simular uma noite do jogo Five Nights at Freddy’s, buscando a melhor sequência
+de decisões horárias (portas, luzes e câmera) que permita ao personagem sobreviver até as 6h com a
+maior quantidade possível de energia restante. A simulação deve considerar ataques de animatrônicos,
+custos energéticos fixos e variáveis, além de casos especiais como a presença do Golden Freddy.
+
+Regras de aprovação / lógica principal:
+- A entrada deve conter exatamente quatro valores inteiros entre 0 e 20; caso contrário, é inválida.
+- Se todas as dificuldades forem 0, não há animatrônicos e a noite termina imediatamente.
+- A cada hora (0h a 5h), decisões são tomadas simultaneamente e afetam o consumo de energia.
+- Ataques devem ser corretamente frustrados; falhar em qualquer ataque resulta em morte.
+- O algoritmo utiliza recursão para simular hora a hora e escolher a configuração que maximiza a energia.
+- Vitória ocorre apenas se o personagem alcançar 6h com energia maior que 0.
+
+Entradas:
+- Uma linha com quatro números inteiros separados por espaço, representando as dificuldades de
+  Bonnie, Chica, Freddy e Foxy.
+
+Saídas:
+- Mensagens específicas para entrada inválida, ausência de animatrônicos, derrota ou vitória.
+- Em caso de vitória, impressão da energia final (com duas casas decimais) e da sequência horária
+  de decisões adotadas.
+"""
+
 # Input:
 niveis_dificuldade = input()
 
-entrada_valida = True  # Variável para verificar se a entrada é válida
-jogo_segue = True  # Variável para verificar se o jogo segue
+entrada_valida = True  # Controla se a análise pode prosseguir
+jogo_segue = True  # Controla se a simulação da noite será executada
 dificuldade_lista = (
     niveis_dificuldade.split()
-)  # Separa os valores de entrada em uma lista
+)  # Quebra a entrada em valores individuais
 
-# Se a entrada não tiver 4 valores, ela será inválida
+# Decisão: quantidade incorreta de valores invalida a entrada
 if len(dificuldade_lista) != 4:
     print('"Uh, Phone Guy aqui. Os animatronics estão um pouco "sapecas" esta noite."')
     entrada_valida = False
 
-# Verificar se todos os valores são numéricos e se estão entre 0 e 20:
-if entrada_valida:  # Se a entrada for válida...
-    # Para cada dificuldade na lista de dificuldades...
+# Decisão: validação de tipo e faixa dos valores
+if entrada_valida:
     for dificuldade in dificuldade_lista:
-        # Se a dificuldade não for um número...
-        if not dificuldade.isnumeric():
-            entrada_valida = False  # Entrada será inválida
-        # Caso contrário... (Se a dificuldade for um número)
+        if (
+            not dificuldade.isnumeric()
+        ):  # Valor não numérico compromete toda a simulação
+            entrada_valida = False
         else:
-            int_dificuldade = int(
-                dificuldade
-            )  # Transformar a dificuldade em um inteiro
-            # Se a dificuldade for menor que 0 ou maior que 20...
-            if int_dificuldade < 0 or int_dificuldade > 20:
-                entrada_valida = False  # Entrada será inválida
+            int_dificuldade = int(dificuldade)
+            if int_dificuldade < 0 or int_dificuldade > 20:  # Fora da faixa permitida
+                entrada_valida = False
 
-    if (
-        not entrada_valida
-    ):  # Se a entrada for inválida... printar mensagem dos "sapecas"
+    if not entrada_valida:
         print(
             '"Uh, Phone Guy aqui. Os animatronics estão um pouco "sapecas" esta noite."'
         )
-    else:  # Caso contrário... (Se a entrada for válida)
-        # Transformar os valores da lista de dificuldades em inteiros
-        lista_inteiros = []  # Lista para armazenar os inteiros
-        for (
-            dificuldade
-        ) in dificuldade_lista:  # Para cada dificuldade na lista de dificuldades...
-            lista_inteiros.append(
-                int(dificuldade)
-            )  # Adicionar o valor inteiro da dificuldade na lista de inteiros
-        dificuldade_lista = (
-            lista_inteiros  # Atualizar a lista de dificuldades para a lista de inteiros
-        )
+    else:
+        # Conversão definitiva para inteiros após validação completa
+        lista_inteiros = []
+        for dificuldade in dificuldade_lista:
+            lista_inteiros.append(int(dificuldade))
+        dificuldade_lista = lista_inteiros
 
-# Caso do "IT'S ME"
-if entrada_valida:  # Se a entrada for válida...
-    string_dificuldades = ""  # String para armazenar as dificuldades
-    for (
-        dificuldade
-    ) in dificuldade_lista:  # Para cada dificuldade na lista de dificuldades...
-        string_dificuldades += str(
-            dificuldade
-        )  # Adicionar o valor da dificuldade na string de dificuldades
+# Decisão: caso especial do "IT'S ME" encerra o programa imediatamente
+if entrada_valida:
+    string_dificuldades = ""
+    for dificuldade in dificuldade_lista:
+        string_dificuldades += str(dificuldade)
     if (
         "1" in string_dificuldades
         and "9" in string_dificuldades
         and "8" in string_dificuldades
         and "7" in string_dificuldades
         and "0" in string_dificuldades
-    ):  # Se a string de dificuldades tiver 1, 9, 8, 7 e 0...
-        print('"IT\'S ME"')  # Printar a mensagem do "IT'S ME"
-        jogo_segue = False  # O jogo não segue
+    ):
+        print('"IT\'S ME"')
+        jogo_segue = False
 
-# Caso do Golden Freddy na noite
-golden_freddy_ativo = False  # Variável para verificar se o Golden Freddy está ativo
-if entrada_valida and jogo_segue:  # Se a entrada for válida e o jogo seguir...
-    numeros_golden = [
-        1,
-        7,
-        8,
-        9,
-    ]  # Ordem crescente dos números de dificuldade para o Golden Freddy estar ativo
-    dificuldades_ordenadas = sorted(
-        dificuldade_lista
-    )  # Ordenar a lista de dificuldades
-    if (
-        dificuldades_ordenadas == numeros_golden
-    ):  # Se a lista de dificuldades ordenadas for igual à lista de números do Golden Freddy...
-        golden_freddy_ativo = True  # Ativar o Golden Freddy
+# Decisão: ativação do Golden Freddy apenas para o anagrama exato de 1,7,8,9
+golden_freddy_ativo = False
+if entrada_valida and jogo_segue:
+    numeros_golden = [1, 7, 8, 9]
+    dificuldades_ordenadas = sorted(dificuldade_lista)
+    if dificuldades_ordenadas == numeros_golden:
+        golden_freddy_ativo = True
 
 
-def simular_noite(hora, energia, niveis, golden_ativo):  # Função para simular a noite
-    if energia <= 0:  # Se a energia for menor ou igual a 0...
-        return None  # MORREU!!
-    if hora == 6:  # Se a hora for 6...
-        return [energia, ""]  # Retornar a energia e uma string vazia
+def simular_noite(hora, energia, niveis, golden_ativo):
+    # Decisão: energia zerada implica morte imediata
+    if energia <= 0:
+        return None
+    # Decisão: alcançar 6h encerra a recursão com sucesso
+    if hora == 6:
+        return [energia, ""]
 
-    atacando_bonnie = (hora == 0) or (hora == 3)  # Bonnie ataca na hora 0 e 3
-    atacando_chica = (hora == 1) or (hora == 4)  # Chica ataca na hora 1 e 4
+    # Definição dos ataques por hora segue regras fixas do problema
+    atacando_bonnie = (hora == 0) or (hora == 3)
+    atacando_chica = (hora == 1) or (hora == 4)
     atacando_foxy = (hora == 4) and (
         energia > 50
-    )  # Foxy ataca na hora 4 se a energia for maior que 50
-    atacando_freddy = hora == 5  # Freddy ataca na hora 5
-    atacando_golden_freddy = hora == 5  # Golden Freddy ataca na hora 5
-    melhor_energia = -1  # Variável para armazenar a melhor energia
-    melhor_configuracao = (
-        None  # Variável para armazenar a melhor configuração [pe, pd, lz, cam]
-    )
+    )  # Condição extra baseada na energia atual
+    atacando_freddy = hora == 5
+    atacando_golden_freddy = hora == 5
 
-    # Para cada possibilidade de PE, PD, LZ e CAM...
+    melhor_energia = -1  # Referência para maximizar energia restante
+    melhor_configuracao = None
+
+    # Exploração exaustiva das decisões possíveis (backtracking implícito)
     for pe in [0, 1]:
         for pd in [0, 1]:
             for lz in [0, 1]:
                 for cam in [0, 1]:
-                    sobreviveu = True  # Variável para verificar se sobreviveu
+                    sobreviveu = True
+                    # Cálculo do custo base: gasto fixo por hora + ferramentas ativadas
                     gasto_atual = 1 + (pe * 7) + (pd * 7) + (lz * 5) + (cam * 9)
 
-                    # Verificar se conseguiu frustrar os ataques
-                    if (
-                        atacando_bonnie and niveis[0] > 0
-                    ):  # Se o animatronic estiver atacando e a dificuldade dele for maior que 0...
-                        if not (
-                            (pe == 1) or (lz == 1 and cam == 0)
-                        ):  # Se ele não fez o necessário para frustrar o ataque...
-                            sobreviveu = False  # MORREU!!
-                        else:  # Caso contrário... (Se ele fez o necessário para frustrar o ataque)
+                    # Decisão: cada bloco avalia se o ataque é frustrado; falha implica morte
+                    if atacando_bonnie and niveis[0] > 0:
+                        if not ((pe == 1) or (lz == 1 and cam == 0)):
+                            sobreviveu = False
+                        else:
                             gasto_atual += 3 + (
                                 niveis[0] * 0.25
-                            )  # Adicionar o gasto de energia
+                            )  # Custo variável por dificuldade
+
                     if sobreviveu and atacando_chica and niveis[1] > 0:
                         if not ((pd == 1) or (cam == 1)):
                             sobreviveu = False
                         else:
                             gasto_atual += 2 + (niveis[1] * 0.35)
+
                     if sobreviveu and atacando_foxy and niveis[3] > 0:
                         if not (pe == 1):
                             sobreviveu = False
                         else:
                             gasto_atual += 5 + (niveis[3] * 0.15)
+
                     if sobreviveu and atacando_freddy and niveis[2] > 0:
                         if not (((pe == 1) and (pd == 1)) or (cam == 1)):
                             sobreviveu = False
                         else:
                             gasto_atual += 3 + (niveis[2] * 0.35)
+
                     if sobreviveu and atacando_golden_freddy and golden_ativo:
                         if not (cam == 1):
                             sobreviveu = False
                         else:
                             gasto_atual += 10 + (niveis[2] * 1.95)
-                    # Se no final de tudo isso ele sobreviveu...
-                    if sobreviveu:
-                        # A nova energia será a energia atual menos o gasto atual
-                        nova_energia = energia - gasto_atual
-                        if (
-                            nova_energia > melhor_energia
-                        ):  # Se a nova energia for maior que a melhor energia...
-                            melhor_energia = nova_energia  # Atualizar a melhor energia
-                            melhor_configuracao = [
-                                pe,
-                                pd,
-                                lz,
-                                cam,
-                            ]  # Atualizar a melhor configuração
-    if melhor_configuracao == None:  # Se não houver melhor configuração...
-        return None  # Retornar None
 
-    pe_val, pd_val, lz_val, cam_val = (
-        melhor_configuracao  # Pega os valores da melhor configuração
-    )
-    # Criar a linha atual
-    pe_txt = (
-        "SIM" if pe_val else "NÃO"
-    )  # Se (opção) for verdadeira, o texto será "SIM", caso contrário, será "NÃO"
+                    # Cálculo da energia restante após todas as penalidades
+                    if sobreviveu:
+                        nova_energia = energia - gasto_atual
+                        if nova_energia > melhor_energia:
+                            melhor_energia = nova_energia
+                            melhor_configuracao = [pe, pd, lz, cam]
+
+    # Decisão: nenhuma configuração viável implica morte
+    if melhor_configuracao is None:
+        return None
+
+    pe_val, pd_val, lz_val, cam_val = melhor_configuracao
+
+    # Conversão da melhor decisão para o formato textual exigido
+    pe_txt = "SIM" if pe_val else "NÃO"
     pd_txt = "SIM" if pd_val else "NÃO"
     lz_txt = "SIM" if lz_val else "NÃO"
     cam_txt = "SIM" if cam_val else "NÃO"
     linha_atual = f"0{hora}:00 AM -> PE: {pe_txt} | PD: {pd_txt} | LZ: {lz_txt} | CAM: {cam_txt}\n"
 
-    resultado_futuro = simular_noite(
-        hora + 1, melhor_energia, niveis, golden_ativo
-    )  # Simular a próxima hora
+    # Chamada recursiva avança a simulação para a próxima hora
+    resultado_futuro = simular_noite(hora + 1, melhor_energia, niveis, golden_ativo)
 
-    if resultado_futuro:  # Se o resultado da próxima hora for válido... (não for None)
-        energia_final = resultado_futuro[
-            0
-        ]  # A energia final será a energia do resultado da próxima hora
-        texto_final = (
-            linha_atual + resultado_futuro[1]
-        )  # O texto final será a linha atual mais o texto do resultado da próxima hora
-        return [energia_final, texto_final]  # Retornar a energia final e o texto final
-    return None  # Retornar None se não sobreviver
+    if resultado_futuro:
+        energia_final = resultado_futuro[0]
+        texto_final = linha_atual + resultado_futuro[1]
+        return [energia_final, texto_final]
+    return None
 
 
-if entrada_valida and jogo_segue:  # Se a entrada for válida e o jogo seguir...
+if entrada_valida and jogo_segue:
     soma_dificuldades = sum(
         dificuldade_lista
-    )  # Somar os valores da lista de dificuldades
-    if soma_dificuldades == 0:  # Se a soma das dificuldades for 0...
+    )  # Avalia se existe ao menos um animatrônico ativo
+    if soma_dificuldades == 0:
         print('"Uh, olá? Olá? Phone Guy falando. Não tem ninguém aqui..."')
-    else:  # Caso contrário... (Se a soma das dificuldades não for 0)
-        resultado = simular_noite(
-            0, 100, dificuldade_lista, golden_freddy_ativo
-        )  # Simular a noite
-        if resultado == None:  # Se o resultado for None...
+    else:
+        resultado = simular_noite(0, 100, dificuldade_lista, golden_freddy_ativo)
+        if resultado is None:
             print(
                 '"Uh, Phone Guy falando. Uh, não tem mais ninguém do outro lado, não é?"'
             )
-        else:  # Caso contrário... (Se o resultado não for None)
-            energia_final = resultado[0]  # Pegar a energia final do resultado
+        else:
+            energia_final = resultado[0]
             print(
                 f'"Uh, olá? Ei, wow, dia sete, parabéns. E ainda com {energia_final:.2f}% de energia. Eu sabia que você conseguiria."'
             )
-            print(resultado[1].rstrip())  # Resultado[1]
+            print(resultado[1].rstrip())

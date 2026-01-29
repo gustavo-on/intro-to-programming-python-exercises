@@ -1,4 +1,35 @@
+"""
+Título: Reviravolta do código-fonte!
+
+Resumo do problema:
+Simula um julgamento no qual a decisão do advogado (pressionar ou confiar)
+define quais evidências podem ser usadas. O programa avalia uma possível
+contradição temporal entre a modificação de um arquivo e a hora da morte,
+além da presença de impressões digitais, para determinar o veredito final.
+
+Lógica principal / regras de aprovação:
+- Se o advogado pressionar e a modificação do arquivo ocorrer após a morte,
+  o álibi é ativado e pode inocentar o réu.
+- Caso não haja contradição temporal (ou ela não esteja disponível),
+  a ausência das digitais do réu na arma ainda pode levar à absolvição.
+- Se nenhuma defesa for válida, o veredito é de culpa.
+
+Entradas:
+- escolha_inicial (str): "pressionar" ou "confiar"
+- hora_modificacao (int): horário HHMM da última modificação do arquivo
+- hora_da_morte (int): horário HHMM do óbito
+- numero_de_digitais (int): quantidade de digitais encontradas
+- lista_digitais (list[str]): nomes associados às digitais da arma
+
+Saídas:
+- Sequência de diálogos simulando o julgamento
+- Veredito final: "INOCENTE" ou "CULPADO"
+"""
+
+
 def checar_modificacao(hora_modificacao, hora_da_morte):
+    # Decisão crítica: verifica se a modificação ocorreu depois da morte,
+    # condição necessária para criar a contradição temporal usada pela defesa
     if hora_modificacao > hora_da_morte:
         return True
     else:
@@ -6,6 +37,8 @@ def checar_modificacao(hora_modificacao, hora_da_morte):
 
 
 def verificar_digital(lista_digitais, nome):
+    # Decisão binária: identifica se uma pessoa específica teve contato
+    # com a arma do crime, o que sustenta ou enfraquece a acusação
     if nome in lista_digitais:
         return True
     else:
@@ -16,12 +49,14 @@ def verificar_digital(lista_digitais, nome):
 print("TRIBUNAL EM SESSÃO")
 print("Juiz: Que comece o julgamento do caso em pauta.")
 print()
+
 # Diálogos iniciais dos advogados:
 print("Promotor Edgeworth: A promotoria está pronta, Meritíssimo.")
 print(
     "Phoenix Wright: (Lá vamos nós... A reputação do escritório está em jogo.) A defesa está pronta."
 )
 print()
+
 # Cena da sala de visitas:
 print("--- SALA DE VISITAS DO TRIBUNAL ---")
 print(
@@ -31,6 +66,7 @@ print(
     "Phoenix Wright: (Eu sinto que ele está escondendo algo... Devo pressioná-lo por mais detalhes ou confiar no que ele me disse?)"
 )
 print()
+
 escolha_inicial = input()
 
 # Julgamento prossegue com a apresentação das evidências:
@@ -41,38 +77,52 @@ print("Promotor Edgeworth: ...João Guilherme!")
 print(
     "Promotor Edgeworth: Comecemos com a evidência virtual chave, o registro da última modificação no computador da vítima."
 )
-hora_modificacao = int(input())  # Hora da modificação do arquivo
+
+hora_modificacao = int(
+    input()
+)  # Dado temporal usado para testar a coerência da acusação
+
 print("Promotor Edgeworth: E, de acordo com o legista, a hora exata da morte.")
-hora_da_morte = int(input())  # Hora da morte
+
+hora_da_morte = int(input())  # Marco temporal de referência para validar a modificação
+
 print(
     "Promotor Edgeworth: Finalmente, a prova irrefutável. O relatório de digitais da arma do crime, o troféu."
 )
-numero_de_digitais = int(input())  # Número de digitais encontradas na arma
+
+numero_de_digitais = int(input())  # Define quantas entradas serão lidas no laço
+
 print("Promotor Edgeworth: Que o escrivão leia os nomes encontrados na arma...")
+
 lista_digitais = []
-for i in range(numero_de_digitais):  # Loop para coletar as digitais
+for i in range(numero_de_digitais):
+    # Coleta sistemática das digitais para posterior verificação lógica
     lista_digitais.append(input())
+
 print()
 
 # Cabeçalho dos argumentos finais:
 print("ARGUMENTOS FINAIS")
 print()
 
-# Bifurcação principal:
+# Avaliações centrais das evidências:
 houve_contradicao_temporal = checar_modificacao(
     hora_modificacao, hora_da_morte
-)  # Checa se houve contradição temporal
+)  # Determina se a linha do tempo da promotoria é inconsistente
+
 elisson_na_lista = verificar_digital(
     lista_digitais, "Elisson"
-)  # Checa se Elisson está na lista de digitais
+)  # Verifica possível terceiro envolvido com acesso ao código
+
 joao_na_lista = verificar_digital(
     lista_digitais, "João Guilherme"
-)  # Checa se João está na lista de digitais
-veredito = "INOCENTE"  # Flag para definir o veredito
-elisson_confessou = False  # Flag para definir se Elisson confessou
+)  # Verifica se há ligação direta do réu com a arma
 
-if escolha_inicial == "pressionar":  # Se a escolha for "pressionar"
-    # Flashback com a confissão de João:
+veredito = "INOCENTE"  # Estado inicial assume inocência até prova contrária
+elisson_confessou = False  # Marca se a narrativa alternativa foi totalmente revelada
+
+if escolha_inicial == "pressionar":
+    # Caminho em que o jogador desbloqueia informações críticas do caso
     print("--- FLASHBACK: SALA DE VISITAS ---")
     print(
         "Phoenix Wright: HOLD IT! João, não é só isso! Eu não posso te defender se você não me contar tudo. O que realmente aconteceu naquela noite?"
@@ -92,16 +142,14 @@ if escolha_inicial == "pressionar":  # Se a escolha for "pressionar"
     print("--- FIM DO FLASHBACK ---")
     print()
 
-    # Argumento inicial da promotoria e objeção da defesa:
     print(
         "Promotor Edgeworth: A lógica é simples. O acusado tinha o motivo, suas digitais estão na arma, e a perícia mostra que o arquivo do 'Ticket Fantasma' foi modificado após a morte, provando que ele permaneceu na cena do crime!"
     )
     print("Phoenix Wright: OBJEÇÃO!")
     print()
 
-    # Sub-bifurcação:
-    if houve_contradicao_temporal:  # Se houver contradição temporal:
-        # Diálogo da reviravolta do álibi:
+    if houve_contradicao_temporal:
+        # Uso direto da inconsistência temporal para invalidar a acusação
         print(
             "Phoenix Wright: A sua lógica tem uma falha fatal, promotor! É impossível que meu cliente tenha modificado aquele arquivo!"
         )
@@ -111,9 +159,11 @@ if escolha_inicial == "pressionar":  # Se a escolha for "pressionar"
         print(
             "Phoenix Wright: A contradição temporal, combinada com este álibi, prova apenas uma coisa: a existência de uma terceira pessoa na cena do crime!"
         )
+
         if not elisson_na_lista:
             print()
-        elif elisson_na_lista:  # Se elisson estiver na lista de digitais:
+        elif elisson_na_lista:
+            # Conexão entre conhecimento prévio do código e presença física na arma
             print(
                 "Phoenix Wright: Se meu cliente tem um álibi, quem poderia ser? Quem alteraria o arquivo do 'Ticket Fantasma' para incriminar João Guilherme?"
             )
@@ -133,33 +183,34 @@ if escolha_inicial == "pressionar":  # Se a escolha for "pressionar"
             )
             print()
             elisson_confessou = True
-    # SENÃO, SE as digitais de João não estiverem na lista:
+
     elif not joao_na_lista:
-        # Diálogo da falta de provas:
+        # Absolvição baseada em ausência de vínculo físico com a arma
         print(
             "Phoenix Wright: A promotoria não pode sequer provar que meu cliente tocou na arma do crime! Não há digitais dele!"
         )
         print()
     else:
+        # Todas as evidências sustentam a acusação
         print(
             "Phoenix Wright: (Droga... As digitais estão na arma e a linha do tempo da promotoria é sólida... Não tenho objeções...)"
         )
         veredito = "CULPADO"
         print()
-else:  # Escolha foi confiar
-    # Reflexão de Phoenix:
+
+else:
+    # Caminho em que o advogado abre mão da informação estratégica
     print(
         "(Voz da Consciência de Phoenix: Eu confiei em João... mas agora, essa 'hora da modificação' não faz sentido para mim. Não tenho como usar essa evidência!)"
     )
     print()
-    # Argumento inicial da promotoria e objeção da defesa:
+
     print(
         "Promotor Edgeworth: A lógica é simples. O acusado tinha o motivo, e suas digitais estão na arma. O caso está encerrado."
     )
     print("Phoenix Wright: OBJEÇÃO!")
     print()
-    # Sub-bifurcação:
-    # Se as digitais de João não estiverem na arma:
+
     if not joao_na_lista:
         print(
             "Phoenix Wright: A promotoria não pode provar que meu cliente tocou na arma do crime! Não há digitais dele!"
@@ -172,12 +223,13 @@ else:  # Escolha foi confiar
         print()
         veredito = "CULPADO"
 
-#
 print("Juiz: ...Compreendo. Após analisar todas as evidências e os argumentos...")
 print(f"Juiz: O veredito para o caso de João Guilherme é: {veredito}!")
 print()
-if veredito == "INOCENTE":  # Se o veredito for "INOCENTE"
-    if elisson_confessou:  # Se Elisson confessou
+
+if veredito == "INOCENTE":
+    if elisson_confessou:
+        # Encerramento reforçando a revelação da verdade
         print(
             "Juiz: Que esta corte jamais esqueça o dia em que a verdade foi revelada contra todas as probabilidades."
         )

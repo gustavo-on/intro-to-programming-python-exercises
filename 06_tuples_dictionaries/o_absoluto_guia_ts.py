@@ -1,3 +1,30 @@
+"""
+Título: O Absoluto Guia T.S
+
+Resumo do problema:
+Implementar um sistema interativo de consultas sobre a vida amorosa e a carreira de
+Taylor Swift, respondendo dinamicamente a diferentes tipos de perguntas até que uma
+frase de encerramento seja fornecida.
+
+Lógica principal / Regras:
+- As informações da vida amorosa são armazenadas em dicionários, relacionando pessoas,
+  músicas e anos específicos de relacionamento.
+- Os acontecimentos da carreira são armazenados em tuplas, respeitando a imutabilidade
+  exigida pelo enunciado.
+- Consultas podem alterar o estado do sistema: ataques podem modificar textos ou remover
+  eras permanentemente.
+- O programa deve processar entradas sequenciais até encontrar a frase de parada.
+
+Entradas:
+- Sequência de strings indicando o tipo de consulta.
+- Dados complementares (pessoa, música, ano ou era), conforme a consulta.
+- Uma frase específica encerra a execução.
+
+Saídas:
+- Respostas textuais conforme o tipo de consulta.
+- Impressão final das eras removidas, caso existam.
+"""
+
 # Dicionário que armazena os sete homens e as respectivas músicas dedicadas
 vida_amorosa = {
     "Jake Gyllenhaal": [
@@ -13,7 +40,7 @@ vida_amorosa = {
     "Travis Kelce": ["The Fate of Ophelia", "The Alchemy", "Wi$h Li$t"],
 }
 
-# Dicionário que relaciona os anos e os respectivos homens
+# Dicionário que relaciona cada ano ao único relacionamento considerado ativo
 relacionamentos_por_ano = {
     "2008": "Joe Jonas",
     "2009": "Taylor Lautner",
@@ -24,8 +51,7 @@ relacionamentos_por_ano = {
     "2023": "Travis Kelce",
 }
 
-# Dicionário que armazena acontecimentos da carreira em tuplas
-# Atenção: Os textos foram limpos de aspas extras para garantir o output correto
+# Dicionário que armazena acontecimentos da carreira em tuplas (estrutura imutável)
 acontecimentos_carreira = {
     "Fearless": (
         "Ganhou o VMA 2009, porém Kanye West interrompeu seu discurso de vitória. Também ganhou o Grammy de Álbum do Ano (2010), sendo a artista mais jovem da história (na época) a receber esse prêmio.",
@@ -44,101 +70,92 @@ acontecimentos_carreira = {
     ),
 }
 
-# Lista para armazenar eras roubadas por Scooter Braun
+# Lista que registra permanentemente as eras removidas do sistema
 eras_roubadas = []
 
 frase_parada = "Já chega de fatos sobre a Taylor, vai fazer a lista de IP"
 entrada = input()
-# Enquanto a entrada não for a frase de parada...
+
+# Decisão de controle: o programa continua enquanto a frase de parada não for recebida
 while entrada != frase_parada:
-    # Se a entrada for "Qual a situação de relacionamento?"...
+
+    # Decisão: consulta sobre status de relacionamento em um ano específico
     if entrada == "Qual a situação de relacionamento?":
-        # Receber a pessoa e o ano de entrada
         pessoa_input = input()
         ano_input = input()
 
-        # Se o ano e a pessoa estiverem no dicionário de relacionamentos, imprimir que estão namorando
+        # Critério: apenas a pessoa associada ao ano consultado é considerada em relacionamento
         if (ano_input in relacionamentos_por_ano) and (
             relacionamentos_por_ano[ano_input] == pessoa_input
         ):
             print(f"{pessoa_input} e Taylor Swift estão namorando em {ano_input}")
-        # Caso contrário, imprimir que não estão namorando
         else:
             print(f"{pessoa_input} e Taylor Swift não estão namorando em {ano_input}")
 
-    # Se a entrada for "Qual pessoa está relacionada essa música?"...
+    # Decisão: consulta reversa, da música para a pessoa associada
     elif entrada == "Qual pessoa está relacionada essa música?":
-        # Receber a música de entrada
         musica_input = input()
 
-        # Para cada homem e lista de músicas no dicionário de vida amorosa...
+        # Busca sequencial para identificar a quem a música foi associada
         for homem, lista_musicas in vida_amorosa.items():
-            # Se a música estiver na lista de músicas do homem, imprimir o homem relacionado
             if musica_input in lista_musicas:
                 print(
                     f"A pessoa relacionada é {homem}, Taylor nunca erra em suas músicas"
                 )
 
-    # Se a entrada for "Quais são todas as músicas relacionadas a essa pessoa?"...
+    # Decisão: listagem completa de músicas associadas a uma pessoa
     elif entrada == "Quais são todas as músicas relacionadas a essa pessoa?":
-        # Receber o nome da pessoa de entrada
         pessoa_input = input()
 
-        # Listar as músicas relacionadas à pessoa:
+        # Operação de composição: transformação da lista em string formatada para saída
         lista_de_musicas = vida_amorosa[pessoa_input]
         musicas = ", ".join(lista_de_musicas)
         print(
             f"Cartas de amor ou indiretas, as músicas dedicadas a {pessoa_input} são: {musicas}"
         )
 
-    # Se a entrada for "O que aconteceu nessa era?"...
+    # Decisão: consulta direta a um acontecimento de uma era específica
     elif entrada == "O que aconteceu nessa era?":
-        # Receber a era de entrada e imprimir o acontecimento da carreira
         era_input = input()
+
+        # Critério: só imprime se a era ainda existir no sistema
         if era_input in acontecimentos_carreira:
             print(acontecimentos_carreira[era_input][0])
 
-    # Se a entrada for "Wayne nunca deixará Taylor vencer! O CIn precisa manter o hate na diva pop, eu vou alterar as informações"...
+    # Decisão: ataque de Wayne Kest, que compromete a informação sem removê-la
     elif (
         entrada
         == "Wayne nunca deixará Taylor vencer! O CIn precisa manter o hate na diva pop, eu vou alterar as informações"
     ):
-        # Receber a era de entrada
         era_input = input()
         print("Cuidado, há um impostor no guia... Informações comprometidas")
-        if (
-            era_input in acontecimentos_carreira
-        ):  # Se a era estiver no dicionário de acontecimentos da carreira...
-            frase_antiga = acontecimentos_carreira[era_input][0]  # Obter a frase antiga
-            nova_frase = (
-                frase_antiga + " Que grande mentira! Taylor Swift só mente"
-            )  # Criar a nova frase
-            acontecimentos_carreira[era_input] = (
-                nova_frase,
-            )  # Atualizar a frase no dicionário
 
-    # Se a entrada for "Scooter não liga que ela comprou todos os álbuns de volta, ele vai roubar tudo dessa era"...
+        # Critério: a frase é estendida, mantendo o texto original e adicionando a acusação
+        if era_input in acontecimentos_carreira:
+            frase_antiga = acontecimentos_carreira[era_input][0]
+            nova_frase = frase_antiga + " Que grande mentira! Taylor Swift só mente"
+            acontecimentos_carreira[era_input] = (nova_frase,)
+
+    # Decisão: ataque de Scooter Braun, que remove a era definitivamente
     elif (
         entrada
         == "Scooter não liga que ela comprou todos os álbuns de volta, ele vai roubar tudo dessa era"
     ):
-        # Receber a era de entrada
         era_input = input()
 
-        eras_roubadas.append(era_input)  # Adicionar a era à lista de eras roubadas
-        acontecimentos_carreira.pop(
-            era_input
-        )  # Remover a era do dicionário de acontecimentos da carreira
+        # Registro da remoção para relatório final
+        eras_roubadas.append(era_input)
+
+        # Operação destrutiva: exclusão permanente da era do dicionário
+        acontecimentos_carreira.pop(era_input)
         print(
             f"Para onde foi a história sobre {era_input}? Parece que alguém roubou tudo e não avisou a Taylor"
         )
 
     entrada = input()
 
-# Imprimir as eras roubadas
-if (
-    len(eras_roubadas) > 0
-):  # Se a lista de eras roubadas não estiver vazia, ou seja, se houver eras roubadas...
+# Decisão final: só imprime o relatório se ao menos uma era tiver sido roubada
+if len(eras_roubadas) > 0:
     print("Big Machine Records roubou:")
-    for era in eras_roubadas:  # Para cada era na lista de eras roubadas...
-        print(era)  # Imprimir a era
+    for era in eras_roubadas:
+        print(era)
